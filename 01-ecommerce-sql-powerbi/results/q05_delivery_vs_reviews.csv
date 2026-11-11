@@ -1,0 +1,4 @@
+delivery_status,orders,pct_of_orders,avg_days_to_deliver,avg_review_score,pct_1_or_2_star
+On time / early,88381,91.9,10.9,4.28,9.4
+Late 1–7 days,4479,4.7,23.3,3.16,36.7
+Late 8+ days,3343,3.5,42.4,1.72,78.5

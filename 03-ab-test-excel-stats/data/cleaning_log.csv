@@ -1,0 +1,10 @@
+check,result,action
+Raw rows,588101,
+Unnamed index column dropped,1,"Leftover pandas index, not data"
+Missing values (all columns),0,None found
+Duplicate user_id,0,None found — each user appears once
+test_group not 'ad' or 'psa',0,None found
+most_ads_hour outside 0-23,0,None found
+total_ads below 1,0,None found
+total_ads above 99th percentile,5810,Kept — heavy users are real; handled by exposure buckets
+Clean rows,588101,No rows removed
