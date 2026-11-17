@@ -1,0 +1,144 @@
+table 'bi fact_orders'
+	lineageTag: 53fc9116-d7fa-4863-b0a7-50c588dc6cd0
+
+	measure 'Delivered Orders (with date)' = CALCULATE ( COUNTROWS ( 'bi fact_orders' ), NOT ISBLANK ( 'bi fact_orders'[days_to_deliver] ), 'bi fact_orders'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) )
+		formatString: #,##0
+		displayFolder: Delivery
+		lineageTag: 2f05a610-4bba-4bd6-808c-5a61788944e3
+
+	measure 'Late Delivery %' = DIVIDE ( CALCULATE ( [Delivered Orders (with date)], 'bi fact_orders'[is_late] = TRUE () ), [Delivered Orders (with date)] )
+		formatString: 0.0%
+		displayFolder: Delivery
+		lineageTag: dc5b7172-ed3b-4f5d-b659-33f17970b1de
+
+	measure 'Avg Days to Deliver' = CALCULATE ( AVERAGE ( 'bi fact_orders'[days_to_deliver] ), 'bi fact_orders'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) )
+		formatString: 0.0
+		displayFolder: Delivery
+		lineageTag: c996feab-1237-4a25-9766-7a9184b9e161
+
+	measure 'Avg Review Score' = CALCULATE ( AVERAGE ( 'bi fact_orders'[review_score] ), 'bi fact_orders'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) )
+		formatString: 0.00
+		displayFolder: Delivery
+		lineageTag: 5609cd78-8118-4635-8176-68e24837f72e
+
+	measure 'Low Review %' = DIVIDE ( CALCULATE ( COUNTROWS ( 'bi fact_orders' ), 'bi fact_orders'[review_score] <= 2, 'bi fact_orders'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) ), CALCULATE ( COUNTROWS ( 'bi fact_orders' ), NOT ISBLANK ( 'bi fact_orders'[review_score] ), 'bi fact_orders'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) ) )
+		formatString: 0.0%
+		displayFolder: Delivery
+		lineageTag: 99240827-27fd-4aee-9929-56acb290db40
+
+	column order_id
+		dataType: string
+		lineageTag: 3634a9f1-3724-483a-a29b-0a30dd624fa0
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: string
+		lineageTag: 4edd1810-2933-4c23-9579-cee8d8f1229e
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column date_key
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a2c9fe91-a00c-427a-9899-3d92523eb377
+		summarizeBy: none
+		sourceColumn: date_key
+
+		variation Variation
+			isDefault
+			relationship: 9322cad4-3853-481d-b5cd-c81c7d567353
+			defaultHierarchy: LocalDateTable_28cc53e2-09aa-4368-be29-b66b3ae9545c.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_status
+		dataType: string
+		lineageTag: ede824f3-04ed-4ca6-9826-c5f90cf0ec55
+		summarizeBy: none
+		sourceColumn: order_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column days_to_deliver
+		dataType: double
+		lineageTag: 097ea9cf-c603-4811-9019-91fa6e6d2442
+		summarizeBy: sum
+		sourceColumn: days_to_deliver
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column delivery_status
+		dataType: string
+		lineageTag: ff8ea3dd-4059-4e2f-9e75-5e7be1d8948f
+		summarizeBy: none
+		sourceColumn: delivery_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_late
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 74ad0352-c5fc-40b7-9b47-35d6b6650935
+		summarizeBy: none
+		sourceColumn: is_late
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_score
+		dataType: double
+		lineageTag: df92193b-0a8d-443c-8ed4-a7af5343bfd8
+		summarizeBy: sum
+		sourceColumn: review_score
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column payment_value
+		dataType: double
+		lineageTag: 380a4d3f-b0e0-4921-89a4-a1c1638ca47d
+		summarizeBy: sum
+		sourceColumn: payment_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column installments
+		dataType: int64
+		formatString: 0
+		lineageTag: 2179db0c-8644-41d6-bd9a-8bbfda1b4289
+		summarizeBy: sum
+		sourceColumn: installments
+
+		annotation SummarizationSetBy = Automatic
+
+	column main_payment_type
+		dataType: string
+		lineageTag: b976d127-6ab5-46a7-85f8-598121c139e6
+		summarizeBy: none
+		sourceColumn: main_payment_type
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'bi fact_orders' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "portfolio"),
+				    bi_fact_orders = Source{[Schema="bi",Item="fact_orders"]}[Data],
+				    FixedDash = Table.TransformColumns(bi_fact_orders, {{"delivery_status", each if _ = null then null else Text.Replace(_, "â€“", "–"), type text}})
+				in
+				    FixedDash
+
+	annotation PBI_ResultType = Table
+

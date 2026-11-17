@@ -1,0 +1,7 @@
+**/data/raw/
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+# Power BI project local files
+**/.pbi/cache.abf
+**/.pbi/localSettings.json

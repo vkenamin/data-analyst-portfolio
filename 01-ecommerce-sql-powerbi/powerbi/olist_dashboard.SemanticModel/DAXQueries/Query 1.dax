@@ -1,0 +1,11 @@
+EVALUATE
+ROW (
+    "Orders", [Orders],
+    "Revenue", [Revenue],
+    "AOV", [Avg Order Value],
+    "Customers", [Customers],
+    "Repeat Rate", [Repeat Rate %],
+    "Late %", [Late Delivery %],
+    "Avg Review", [Avg Review Score],
+    "Low Review %", [Low Review %]
+)

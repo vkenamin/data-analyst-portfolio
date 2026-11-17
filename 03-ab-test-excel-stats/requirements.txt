@@ -1,0 +1,9 @@
+pandas>=2.0
+numpy
+scipy
+statsmodels
+xlsxwriter
+openpyxl
+matplotlib
+jupyter
+jupytext

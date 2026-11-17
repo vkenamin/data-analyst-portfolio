@@ -1,0 +1,95 @@
+// =====================================================================
+// DAX measures for the Olist dashboard
+// Create a blank table called _Measures (Enter Data > OK) and add these.
+// Relationships (single direction, many-to-one):
+//   fact_sales[date_key]    -> dim_date[date_key]
+//   fact_sales[customer_id] -> dim_customer[customer_id]
+//   fact_sales[product_id]  -> dim_product[product_id]
+//   fact_sales[seller_id]   -> dim_seller[seller_id]
+//   fact_orders[date_key]   -> dim_date[date_key]
+//   fact_orders[customer_id]-> dim_customer[customer_id]
+// Mark dim_date as a date table (Table tools > Mark as date table).
+// =====================================================================
+
+// ---------- Core sales ----------
+Revenue =
+CALCULATE ( SUM ( fact_sales[price] ), fact_sales[order_status] = "delivered" )
+
+Freight =
+CALCULATE ( SUM ( fact_sales[freight_value] ), fact_sales[order_status] = "delivered" )
+
+Orders =
+CALCULATE ( DISTINCTCOUNT ( fact_sales[order_id] ), fact_sales[order_status] = "delivered" )
+
+Customers =
+CALCULATE (
+    DISTINCTCOUNT ( dim_customer[customer_unique_id] ),
+    fact_sales[order_status] = "delivered"
+)
+
+Avg Order Value =
+DIVIDE ( [Revenue], [Orders] )
+
+Items per Order =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( fact_sales ), fact_sales[order_status] = "delivered" ),
+    [Orders]
+)
+
+// ---------- Time intelligence ----------
+Revenue PM =
+CALCULATE ( [Revenue], DATEADD ( dim_date[date_key], -1, MONTH ) )
+
+Revenue MoM % =
+DIVIDE ( [Revenue] - [Revenue PM], [Revenue PM] )
+
+Revenue PY =
+CALCULATE ( [Revenue], SAMEPERIODLASTYEAR ( dim_date[date_key] ) )
+
+Revenue YoY % =
+DIVIDE ( [Revenue] - [Revenue PY], [Revenue PY] )
+
+Revenue YTD =
+TOTALYTD ( [Revenue], dim_date[date_key] )
+
+// ---------- Delivery & satisfaction ----------
+Delivered Orders (with date) =
+CALCULATE ( COUNTROWS ( fact_orders ), NOT ISBLANK ( fact_orders[days_to_deliver] ) )
+
+Late Delivery % =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( fact_orders ), fact_orders[is_late] = TRUE () ),
+    [Delivered Orders (with date)]
+)
+
+Avg Days to Deliver =
+AVERAGE ( fact_orders[days_to_deliver] )
+
+Avg Review Score =
+AVERAGE ( fact_orders[review_score] )
+
+Low Review % =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( fact_orders ), fact_orders[review_score] <= 2 ),
+    CALCULATE ( COUNTROWS ( fact_orders ), NOT ISBLANK ( fact_orders[review_score] ) )
+)
+
+// ---------- Customers ----------
+Repeat Customers =
+COUNTROWS (
+    FILTER (
+        VALUES ( dim_customer[customer_unique_id] ),
+        [Orders] >= 2
+    )
+)
+
+Repeat Rate % =
+DIVIDE ( [Repeat Customers], [Customers] )
+
+// Share of revenue for the selected category vs all categories
+Category Share % =
+DIVIDE ( [Revenue], CALCULATE ( [Revenue], ALL ( dim_product[category] ) ) )
+
+// Rank categories by revenue (use in a table visual, filter Top N)
+Category Rank =
+RANKX ( ALL ( dim_product[category] ), [Revenue], , DESC, DENSE )

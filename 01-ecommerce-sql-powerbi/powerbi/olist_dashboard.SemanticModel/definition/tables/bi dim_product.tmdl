@@ -1,0 +1,49 @@
+table 'bi dim_product'
+	lineageTag: bb8d680a-6af4-4d51-8146-253628d43464
+
+	column product_id
+		dataType: string
+		lineageTag: 6afb2a59-4ef2-4c54-8f1b-0898bc1fb87e
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column category
+		dataType: string
+		lineageTag: 88532bdd-ddec-4fc4-a7bd-b949a2f0b05e
+		summarizeBy: none
+		sourceColumn: category
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_weight_g
+		dataType: double
+		lineageTag: 7c9665d3-ad47-4994-bd9b-9163d521692b
+		summarizeBy: none
+		sourceColumn: product_weight_g
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column product_photos_qty
+		dataType: int64
+		formatString: 0
+		lineageTag: 4ddc1c77-3bcb-4fa7-83b4-50425a18bd65
+		summarizeBy: none
+		sourceColumn: product_photos_qty
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'bi dim_product' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "portfolio"),
+				    bi_dim_product = Source{[Schema="bi",Item="dim_product"]}[Data]
+				in
+				    bi_dim_product
+
+	annotation PBI_ResultType = Table
+

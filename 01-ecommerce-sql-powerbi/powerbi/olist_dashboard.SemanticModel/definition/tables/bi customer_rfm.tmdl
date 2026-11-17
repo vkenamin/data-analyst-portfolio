@@ -1,0 +1,85 @@
+table 'bi customer_rfm'
+	lineageTag: 2fa7ae26-b0d6-4add-950a-852de03b7035
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: f6630411-8650-46d2-be5a-d399c5ff8488
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column recency_days
+		dataType: int64
+		formatString: 0
+		lineageTag: 08ae99bc-2bea-45f9-8a62-0ff55e2473aa
+		summarizeBy: none
+		sourceColumn: recency_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column frequency
+		dataType: int64
+		formatString: 0
+		lineageTag: 21d45d37-8bdc-4fcc-831d-69c3e977926e
+		summarizeBy: none
+		sourceColumn: frequency
+
+		annotation SummarizationSetBy = Automatic
+
+	column monetary
+		dataType: double
+		lineageTag: 4a10bc25-0afe-4cbb-a03d-42f95fb01cc9
+		summarizeBy: none
+		sourceColumn: monetary
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column r_score
+		dataType: int64
+		formatString: 0
+		lineageTag: a63019f5-ece0-43a1-a808-9e01820da25f
+		summarizeBy: none
+		sourceColumn: r_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column f_score
+		dataType: int64
+		formatString: 0
+		lineageTag: 77d060a6-6320-4c14-a0f6-8e34f1dbc7f5
+		summarizeBy: none
+		sourceColumn: f_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column m_score
+		dataType: int64
+		formatString: 0
+		lineageTag: e80fc8f7-3321-464a-8587-27f1c40e7a54
+		summarizeBy: none
+		sourceColumn: m_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column segment
+		dataType: string
+		lineageTag: cfa77b22-b7b8-4b1e-aeca-3773b1b9bebc
+		summarizeBy: none
+		sourceColumn: segment
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'bi customer_rfm' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "portfolio"),
+				    bi_customer_rfm = Source{[Schema="bi",Item="customer_rfm"]}[Data]
+				in
+				    bi_customer_rfm
+
+	annotation PBI_ResultType = Table
+

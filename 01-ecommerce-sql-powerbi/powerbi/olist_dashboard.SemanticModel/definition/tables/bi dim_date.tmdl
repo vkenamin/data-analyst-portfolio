@@ -1,0 +1,109 @@
+table 'bi dim_date'
+	lineageTag: 054cc201-ce3b-48ca-9275-e517eeb32c4e
+
+	column date_key
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 530cbe42-98cf-4050-bd12-f63983b2f348
+		summarizeBy: none
+		sourceColumn: date_key
+
+		variation Variation
+			isDefault
+			relationship: ecb23e5d-c2b3-42e6-8568-f639a9b05181
+			defaultHierarchy: LocalDateTable_11d5088d-7da8-4df3-b684-edddfd833348.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column year
+		dataType: int64
+		formatString: 0
+		lineageTag: 5d2df4d5-2ef2-4cca-b0be-ea3a35e7551d
+		summarizeBy: sum
+		sourceColumn: year
+
+		annotation SummarizationSetBy = Automatic
+
+	column quarter
+		dataType: int64
+		formatString: 0
+		lineageTag: 22fc6c94-e6bb-44e2-a6e7-a3a813930670
+		summarizeBy: sum
+		sourceColumn: quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_num
+		dataType: int64
+		formatString: 0
+		lineageTag: c09e6a16-7b73-4e37-8e9a-804ec9fd6fe7
+		summarizeBy: sum
+		sourceColumn: month_num
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_name
+		dataType: string
+		lineageTag: 491d004c-0ef8-4ae2-ac5e-39a2e0393323
+		summarizeBy: none
+		sourceColumn: month_name
+		sortByColumn: month_num
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_start
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 6dfe7f50-6d32-4584-8a6b-d49eb21bb904
+		summarizeBy: none
+		sourceColumn: month_start
+
+		variation Variation
+			isDefault
+			relationship: 5db447af-c5da-469d-a97c-8f6bb764e09d
+			defaultHierarchy: LocalDateTable_060c6904-9cf2-4c55-bbd1-944f244a8d76.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column weekday_num
+		dataType: int64
+		formatString: 0
+		lineageTag: 5db05a56-577f-44ea-a7bd-98d24b248cb3
+		summarizeBy: sum
+		sourceColumn: weekday_num
+
+		annotation SummarizationSetBy = Automatic
+
+	column weekday_name
+		dataType: string
+		lineageTag: 373b67eb-ef2c-4fc8-9071-c8b2f0a08fc5
+		summarizeBy: none
+		sourceColumn: weekday_name
+		sortByColumn: weekday_num
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_weekend
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 5f4a4a4e-4b76-4f12-991f-d67d572f5250
+		summarizeBy: none
+		sourceColumn: is_weekend
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'bi dim_date' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "portfolio"),
+				    bi_dim_date = Source{[Schema="bi",Item="dim_date"]}[Data]
+				in
+				    bi_dim_date
+
+	annotation PBI_ResultType = Table
+

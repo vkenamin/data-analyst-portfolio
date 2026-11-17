@@ -1,0 +1,38 @@
+table 'bi dim_seller'
+	lineageTag: ab49e47f-216f-4181-ba53-e3a36e416fe2
+
+	column seller_id
+		dataType: string
+		lineageTag: 69669992-4f67-4969-b970-3d35ed8334b0
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_city
+		dataType: string
+		lineageTag: 2c55dc84-017d-4ba1-8f0a-2aefd980c0c6
+		summarizeBy: none
+		sourceColumn: seller_city
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_state
+		dataType: string
+		lineageTag: 656452fb-41d6-49f3-855c-9e5f35dd0161
+		summarizeBy: none
+		sourceColumn: seller_state
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'bi dim_seller' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "portfolio"),
+				    bi_dim_seller = Source{[Schema="bi",Item="dim_seller"]}[Data]
+				in
+				    bi_dim_seller
+
+	annotation PBI_ResultType = Table
+

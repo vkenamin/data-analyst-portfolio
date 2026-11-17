@@ -1,0 +1,184 @@
+table 'bi fact_sales'
+	lineageTag: 86295372-2c57-4c88-a2a2-7847e4aea70b
+
+	measure Revenue = CALCULATE ( SUM ( 'bi fact_sales'[price] ), 'bi fact_sales'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) )
+		formatString: \R\$ #,##0
+		displayFolder: Sales
+		lineageTag: cc5dc978-c564-4d6d-bb99-b5ea7a20e43b
+
+	measure Freight = CALCULATE ( SUM ( 'bi fact_sales'[freight_value] ), 'bi fact_sales'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) )
+		formatString: \R\$ #,##0
+		displayFolder: Sales
+		lineageTag: 288ef3cd-3234-4dfb-8455-387b1aaaa9d7
+
+	measure Orders = CALCULATE ( DISTINCTCOUNT ( 'bi fact_sales'[order_id] ), 'bi fact_sales'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) )
+		formatString: #,##0
+		displayFolder: Sales
+		lineageTag: e54c6d4a-6c18-4f64-bc54-b33a181c149f
+
+	measure Customers = COUNTROWS ( SUMMARIZE ( CALCULATETABLE ( 'bi fact_sales', 'bi fact_sales'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) ), 'bi dim_customer'[customer_unique_id] ) )
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: 44ca3463-babe-4b3b-b55a-cfb089829fe2
+
+	measure 'Avg Order Value' = DIVIDE ( [Revenue], [Orders] )
+		formatString: \R\$ #,##0.00
+		displayFolder: Sales
+		lineageTag: da7491ff-6381-4f29-b0cb-9c54a53aeb92
+
+	measure 'Items per Order' = DIVIDE ( CALCULATE ( COUNTROWS ( 'bi fact_sales' ), 'bi fact_sales'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) ), [Orders] )
+		formatString: 0.00
+		displayFolder: Sales
+		lineageTag: 6358bafe-b17c-43e2-993f-592d055ea42d
+
+	measure 'Revenue PM' = CALCULATE ( [Revenue], DATEADD ( 'bi dim_date'[date_key], -1, MONTH ) )
+		formatString: \R\$ #,##0
+		displayFolder: Time intelligence
+		lineageTag: d303b9ed-066c-4080-b275-126623b5896d
+
+	measure 'Revenue MoM %' = DIVIDE ( [Revenue] - [Revenue PM], [Revenue PM] )
+		formatString: 0.0%
+		displayFolder: Time intelligence
+		lineageTag: b20464f1-5269-4162-aab2-fea01050a047
+
+	measure 'Revenue PY' = CALCULATE ( [Revenue], SAMEPERIODLASTYEAR ( 'bi dim_date'[date_key] ) )
+		formatString: \R\$ #,##0
+		displayFolder: Time intelligence
+		lineageTag: 1cf2d4a4-3aa3-4169-a639-7d51a64e133b
+
+	measure 'Revenue YoY %' = DIVIDE ( [Revenue] - [Revenue PY], [Revenue PY] )
+		formatString: 0.0%
+		displayFolder: Time intelligence
+		lineageTag: 57b870ee-2e00-4909-8754-b28e0eddb309
+
+	measure 'Revenue YTD' = TOTALYTD ( [Revenue], 'bi dim_date'[date_key] )
+		formatString: \R\$ #,##0
+		displayFolder: Time intelligence
+		lineageTag: f034c561-27d0-466d-9e17-f46de11f7cc2
+
+	measure 'Repeat Customers' = COUNTROWS ( FILTER ( SUMMARIZE ( CALCULATETABLE ( 'bi fact_sales', 'bi fact_sales'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) ), 'bi dim_customer'[customer_unique_id] ), [Orders] >= 2 ) )
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: dc95bd5b-292f-43b4-84f9-b668036c6c80
+
+	measure 'Repeat Rate %' = DIVIDE ( [Repeat Customers], [Customers] )
+		formatString: 0.0%
+		displayFolder: Customers
+		lineageTag: 4b92ed5a-3a0d-442f-97f6-ae725b04f930
+
+	measure 'Category Share %' = DIVIDE ( [Revenue], CALCULATE ( [Revenue], ALL ( 'bi dim_product'[category] ) ) )
+		formatString: 0.0%
+		displayFolder: Sales
+		lineageTag: 38ba265a-2083-4b88-8d48-c43b2e373df2
+
+	measure 'Category Rank' = RANKX ( ALL ( 'bi dim_product'[category] ), [Revenue], , DESC, DENSE )
+		formatString: 0
+		displayFolder: Sales
+		lineageTag: de4e68c4-acf2-43de-bf77-9d65a06e4663
+
+	measure 'Segment Customers' = COUNTROWS ( 'bi customer_rfm' )
+		formatString: #,##0
+		displayFolder: Customers
+		lineageTag: d7d33fc9-dbb0-4dce-a696-668b4e708476
+
+	measure 'Segment Revenue' = SUM ( 'bi customer_rfm'[monetary] )
+		formatString: \R\$ #,##0
+		displayFolder: Customers
+		lineageTag: c90e3b46-aeef-46df-b46a-61c6f1118b07
+
+	column order_id
+		dataType: string
+		lineageTag: cdefb947-f414-47db-b34f-cf715a926422
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_item_id
+		dataType: int64
+		formatString: 0
+		lineageTag: be2ce63d-1def-4a88-9bcc-10c4f9b724b4
+		summarizeBy: sum
+		sourceColumn: order_item_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column date_key
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: d1fe0158-17a3-4b41-b077-0f141eee9148
+		summarizeBy: none
+		sourceColumn: date_key
+
+		variation Variation
+			isDefault
+			relationship: 0eb6364c-38cb-40b5-a89f-8d2115ed8227
+			defaultHierarchy: LocalDateTable_bd1c4689-8619-4e98-b1aa-ab5e5195c398.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column customer_id
+		dataType: string
+		lineageTag: 7f3a7ede-e29d-4339-aedf-428fa1828e97
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_id
+		dataType: string
+		lineageTag: b1b72649-288d-49c1-be0b-1138e5f4bc68
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_id
+		dataType: string
+		lineageTag: 53a45faa-c183-4c1b-b4cc-4d627f26a5bc
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_status
+		dataType: string
+		lineageTag: 20605b76-ecab-42c3-aedd-0d1fe3db5cd8
+		summarizeBy: none
+		sourceColumn: order_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column price
+		dataType: double
+		lineageTag: a8565e6b-4b90-48b3-af3f-265707850034
+		summarizeBy: sum
+		sourceColumn: price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column freight_value
+		dataType: double
+		lineageTag: ff834756-7f9c-44e5-bccb-4476a759eba0
+		summarizeBy: sum
+		sourceColumn: freight_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'bi fact_sales' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "portfolio"),
+				    bi_fact_sales = Source{[Schema="bi",Item="fact_sales"]}[Data]
+				in
+				    bi_fact_sales
+
+	annotation PBI_ResultType = Table
+

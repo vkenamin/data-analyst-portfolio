@@ -1,0 +1,8 @@
+segment,customers,pct_customers,revenue_brl,pct_revenue,avg_recency_days,avg_spend_brl
+New high-value,14439,15.5,3856614,29.3,94,267.10
+High-value at risk,13745,14.8,3799596,28.8,394,276.43
+Middle,18021,19.4,2345234,17.8,222,130.14
+Lost low-value,22504,24.2,1254819,9.5,395,55.76
+New low-value,21606,23.2,1199408,9.1,92,55.51
+Loyal - lapsing,1593,1.7,401302,3.0,321,251.92
+Loyal - active,1196,1.3,324053,2.5,91,270.95

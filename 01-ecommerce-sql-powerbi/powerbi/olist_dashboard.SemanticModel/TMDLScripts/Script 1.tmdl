@@ -1,0 +1,93 @@
+createOrReplace
+
+	ref table 'bi fact_sales'
+
+		measure Revenue = CALCULATE ( SUM ( 'bi fact_sales'[price] ), 'bi fact_sales'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) )
+			formatString: \R\$ #,##0
+			displayFolder: Sales
+
+		measure Freight = CALCULATE ( SUM ( 'bi fact_sales'[freight_value] ), 'bi fact_sales'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) )
+			formatString: \R\$ #,##0
+			displayFolder: Sales
+
+		measure Orders = CALCULATE ( DISTINCTCOUNT ( 'bi fact_sales'[order_id] ), 'bi fact_sales'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) )
+			formatString: #,##0
+			displayFolder: Sales
+
+		measure Customers = COUNTROWS ( SUMMARIZE ( CALCULATETABLE ( 'bi fact_sales', 'bi fact_sales'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) ), 'bi dim_customer'[customer_unique_id] ) )
+			formatString: #,##0
+			displayFolder: Customers
+
+		measure 'Avg Order Value' = DIVIDE ( [Revenue], [Orders] )
+			formatString: \R\$ #,##0.00
+			displayFolder: Sales
+
+		measure 'Items per Order' = DIVIDE ( CALCULATE ( COUNTROWS ( 'bi fact_sales' ), 'bi fact_sales'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) ), [Orders] )
+			formatString: 0.00
+			displayFolder: Sales
+
+		measure 'Revenue PM' = CALCULATE ( [Revenue], DATEADD ( 'bi dim_date'[date_key], -1, MONTH ) )
+			formatString: \R\$ #,##0
+			displayFolder: Time intelligence
+
+		measure 'Revenue MoM %' = DIVIDE ( [Revenue] - [Revenue PM], [Revenue PM] )
+			formatString: 0.0%
+			displayFolder: Time intelligence
+
+		measure 'Revenue PY' = CALCULATE ( [Revenue], SAMEPERIODLASTYEAR ( 'bi dim_date'[date_key] ) )
+			formatString: \R\$ #,##0
+			displayFolder: Time intelligence
+
+		measure 'Revenue YoY %' = DIVIDE ( [Revenue] - [Revenue PY], [Revenue PY] )
+			formatString: 0.0%
+			displayFolder: Time intelligence
+
+		measure 'Revenue YTD' = TOTALYTD ( [Revenue], 'bi dim_date'[date_key] )
+			formatString: \R\$ #,##0
+			displayFolder: Time intelligence
+
+		measure 'Repeat Customers' = COUNTROWS ( FILTER ( SUMMARIZE ( CALCULATETABLE ( 'bi fact_sales', 'bi fact_sales'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) ), 'bi dim_customer'[customer_unique_id] ), [Orders] >= 2 ) )
+			formatString: #,##0
+			displayFolder: Customers
+
+		measure 'Repeat Rate %' = DIVIDE ( [Repeat Customers], [Customers] )
+			formatString: 0.0%
+			displayFolder: Customers
+
+		measure 'Category Share %' = DIVIDE ( [Revenue], CALCULATE ( [Revenue], ALL ( 'bi dim_product'[category] ) ) )
+			formatString: 0.0%
+			displayFolder: Sales
+
+		measure 'Category Rank' = RANKX ( ALL ( 'bi dim_product'[category] ), [Revenue], , DESC, DENSE )
+			formatString: 0
+			displayFolder: Sales
+
+		measure 'Segment Customers' = COUNTROWS ( 'bi customer_rfm' )
+			formatString: #,##0
+			displayFolder: Customers
+
+		measure 'Segment Revenue' = SUM ( 'bi customer_rfm'[monetary] )
+			formatString: \R\$ #,##0
+			displayFolder: Customers
+
+	ref table 'bi fact_orders'
+
+		measure 'Delivered Orders (with date)' = CALCULATE ( COUNTROWS ( 'bi fact_orders' ), NOT ISBLANK ( 'bi fact_orders'[days_to_deliver] ), 'bi fact_orders'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) )
+			formatString: #,##0
+			displayFolder: Delivery
+
+		measure 'Late Delivery %' = DIVIDE ( CALCULATE ( [Delivered Orders (with date)], 'bi fact_orders'[is_late] = TRUE () ), [Delivered Orders (with date)] )
+			formatString: 0.0%
+			displayFolder: Delivery
+
+		measure 'Avg Days to Deliver' = CALCULATE ( AVERAGE ( 'bi fact_orders'[days_to_deliver] ), 'bi fact_orders'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) )
+			formatString: 0.0
+			displayFolder: Delivery
+
+		measure 'Avg Review Score' = CALCULATE ( AVERAGE ( 'bi fact_orders'[review_score] ), 'bi fact_orders'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) )
+			formatString: 0.00
+			displayFolder: Delivery
+
+		measure 'Low Review %' = DIVIDE ( CALCULATE ( COUNTROWS ( 'bi fact_orders' ), 'bi fact_orders'[review_score] <= 2, 'bi fact_orders'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) ), CALCULATE ( COUNTROWS ( 'bi fact_orders' ), NOT ISBLANK ( 'bi fact_orders'[review_score] ), 'bi fact_orders'[order_status] = "delivered", KEEPFILTERS ( DATESBETWEEN ( 'bi dim_date'[date_key], DATE ( 2017, 1, 1 ), DATE ( 2018, 8, 31 ) ) ) ) )
+			formatString: 0.0%
+			displayFolder: Delivery

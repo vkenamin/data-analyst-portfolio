@@ -1,0 +1,46 @@
+table 'bi dim_customer'
+	lineageTag: d6ecb600-6f34-4650-b077-b81ca90e0353
+
+	column customer_id
+		dataType: string
+		lineageTag: bff7a061-04b2-45d0-860b-05e94dfd9a56
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: 99e2ab25-92aa-48f7-81b8-f34e05f34297
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_city
+		dataType: string
+		lineageTag: 3677e9da-d79e-4f84-9192-133efa52c625
+		summarizeBy: none
+		sourceColumn: customer_city
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_state
+		dataType: string
+		lineageTag: b8b62d72-5420-4c71-80ae-a892c9156a0c
+		summarizeBy: none
+		sourceColumn: customer_state
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'bi dim_customer' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "portfolio"),
+				    bi_dim_customer = Source{[Schema="bi",Item="dim_customer"]}[Data]
+				in
+				    bi_dim_customer
+
+	annotation PBI_ResultType = Table
+

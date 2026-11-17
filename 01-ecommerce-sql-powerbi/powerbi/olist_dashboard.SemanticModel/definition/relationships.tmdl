@@ -1,0 +1,53 @@
+relationship ecb23e5d-c2b3-42e6-8568-f639a9b05181
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'bi dim_date'.date_key
+	toColumn: LocalDateTable_11d5088d-7da8-4df3-b684-edddfd833348.Date
+
+relationship 5db447af-c5da-469d-a97c-8f6bb764e09d
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'bi dim_date'.month_start
+	toColumn: LocalDateTable_060c6904-9cf2-4c55-bbd1-944f244a8d76.Date
+
+relationship 9322cad4-3853-481d-b5cd-c81c7d567353
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'bi fact_orders'.date_key
+	toColumn: LocalDateTable_28cc53e2-09aa-4368-be29-b66b3ae9545c.Date
+
+relationship 0eb6364c-38cb-40b5-a89f-8d2115ed8227
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'bi fact_sales'.date_key
+	toColumn: LocalDateTable_bd1c4689-8619-4e98-b1aa-ab5e5195c398.Date
+
+relationship AutoDetected_50c9110e-effb-426e-9b5f-5f7f08cd4895
+	fromColumn: 'bi dim_customer'.customer_unique_id
+	toColumn: 'bi customer_rfm'.customer_unique_id
+
+relationship AutoDetected_94223767-03ce-4c29-aa5b-34c3c2870836
+	fromColumn: 'bi fact_sales'.customer_id
+	toColumn: 'bi dim_customer'.customer_id
+
+relationship AutoDetected_f146bee0-480b-41ff-b24f-3b9b5010e856
+	fromColumn: 'bi fact_sales'.product_id
+	toColumn: 'bi dim_product'.product_id
+
+relationship AutoDetected_e4562b43-8599-4ab1-bd8c-778b344b26f8
+	fromColumn: 'bi fact_sales'.seller_id
+	toColumn: 'bi dim_seller'.seller_id
+
+relationship AutoDetected_de213caf-27ca-4457-aa43-df4c7b58f8d9
+	isActive: false
+	fromColumn: 'bi fact_sales'.order_id
+	toColumn: 'bi fact_orders'.order_id
+
+relationship fact_sales_date
+	fromColumn: 'bi fact_sales'.date_key
+	toColumn: 'bi dim_date'.date_key
+
+relationship fact_orders_date
+	fromColumn: 'bi fact_orders'.date_key
+	toColumn: 'bi dim_date'.date_key
+
+relationship fact_orders_customer
+	fromColumn: 'bi fact_orders'.customer_id
+	toColumn: 'bi dim_customer'.customer_id
+
