@@ -11,11 +11,11 @@ trusting it, and ends with numbers a manager can act on.
 
 ## Headline results
 
-- **Project 1** — 96K orders, R$13.2M revenue: orders arriving 8+ days late average **1.7★** vs 4.3★ on time;
+- **Project 1** - 96K orders, R$13.2M revenue: orders arriving 8+ days late average **1.7★** vs 4.3★ on time;
   only **3%** of customers ever reorder; top 20% of customers bring **57%** of revenue.
-- **Project 2** — 1,437 Walmart food products: department forecast within **6% WAPE**; SNAP days lift sales **11%**
+- **Project 2** - 1,437 Walmart food products: department forecast within **6% WAPE**; SNAP days lift sales **11%**
   (p < 0.001); **867 likely stockouts ≈ $115K** lost revenue, 85% on A-items.
-- **Project 3** — 588K users: ads lift conversion **+43%** (p < 0.001, ≈ 4,300 extra conversions), but only for users
+- **Project 3** - 588K users: ads lift conversion **+43%** (p < 0.001, ≈ 4,300 extra conversions), but only for users
   who see **25+ ads**.
 
 ## Skills covered
