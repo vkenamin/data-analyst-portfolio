@@ -22,16 +22,16 @@ trusting it, and ends with numbers a manager can act on.
 
 | Skill | Where |
 |---|---|
-| SQL — joins, CTEs, window functions, cohorts, segmentation | Project 1 |
+| SQL - joins, CTEs, window functions, cohorts, segmentation | Project 1 |
 | Relational database design (PostgreSQL, keys, indexes, views) | Project 1 |
 | Data cleaning & data-quality validation | All three |
-| Excel — COUNTIFS, named ranges, statistical functions, charts, dashboard | Project 3 |
-| BI dashboards — Power BI (star schema, DAX), Tableau | Projects 1, 3 |
-| Python — pandas, NumPy, matplotlib, Jupyter | All three |
-| Statistics — hypothesis tests, confidence intervals, power analysis | Projects 2, 3 |
+| Excel - COUNTIFS, named ranges, statistical functions, charts, dashboard | Project 3 |
+| BI dashboards - Power BI (star schema, DAX), Tableau | Projects 1, 3 |
+| Python - pandas, NumPy, matplotlib, Jupyter | All three |
+| Statistics - hypothesis tests, confidence intervals, power analysis | Projects 2, 3 |
 | Forecasting & inventory analytics | Project 2 |
 | KPI design & business recommendations | All three |
-| Reproducible work — scripts, verification, Git | All three |
+| Reproducible work - scripts, verification, Git | All three |
 
 ## Data sources
 All public: [Olist Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) ·
