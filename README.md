@@ -1,4 +1,4 @@
-# Data Analyst Portfolio — Viken Amin
+# Data Analyst Portfolio - Viken Amin
 
 Three end-to-end projects on real data. Each one starts from a business question, checks the data before
 trusting it, and ends with numbers a manager can act on.
